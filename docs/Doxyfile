@@ -25,9 +25,3 @@ WARN_IF_DOC_ERROR       = YES
 WARN_IF_UNDOCUMENTED    = NO
 WARN_AS_ERROR           = YES
 WARN_LOGFILE            = build-docs/doxygen-warnings.log
-
-MACRO_EXPANSION         = YES
-EXPAND_ONLY_PREDEF      = YES
-PREDEFINED              = _WIN32=1 \
-                          SH_STORAGE_DEFINE(name_,line_max_,argc_max_,history_depth_)= \
-                          SH_ARRAY_SIZE(a)=1
