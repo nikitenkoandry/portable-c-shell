@@ -8,14 +8,23 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y doxygen
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install Doxygen 1.18.0
+        run: |
+          curl --fail --location \
+            https://github.com/doxygen/doxygen/releases/download/Release_1_18_0/doxygen-1.18.0.linux.bin.tar.gz \
+            --output /tmp/doxygen.tar.gz
+          echo "14fa81bdc34171edb5f1f02b1d60e74802f0439b77fa44e592565d517d72df90  /tmp/doxygen.tar.gz" \
+            | sha256sum --check
+          tar -xzf /tmp/doxygen.tar.gz -C /tmp
+          echo "/tmp/doxygen-1.18.0/bin" >> "$GITHUB_PATH"
+      - run: doxygen --version
       - run: doxygen docs/Doxyfile
 
   gcc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: cmake -S . -B build -G Ninja -DSH_WARNINGS_AS_ERRORS=ON
       - run: cmake --build build
       - run: ctest --test-dir build --output-on-failure
@@ -23,7 +32,7 @@ jobs:
   gcc-analyzer:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: >-
           cmake -S . -B build-analyzer -G Ninja
           -DSH_ENABLE_GCC_ANALYZER=ON
@@ -33,7 +42,7 @@ jobs:
   clang-sanitizers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: >-
           cmake -S . -B build-sanitize -G Ninja
           -DCMAKE_C_COMPILER=clang
@@ -45,7 +54,7 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: sudo apt-get update && sudo apt-get install -y gcovr
       - run: >-
           cmake -S . -B build-coverage -G Ninja
@@ -61,7 +70,7 @@ jobs:
   msvc:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: cmake -S . -B build -A x64 -DSH_WARNINGS_AS_ERRORS=ON
       - run: cmake --build build --config Debug
       - run: ctest --test-dir build -C Debug --output-on-failure
