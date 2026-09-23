@@ -36,11 +36,13 @@ static const sh_cmd_t builtin_commands[] = {
     SH_CMD_SUB("echo", "on|off|status", "Control local echo", echo_children),
 };
 
+/** @brief Test whether a candidate begins with the requested prefix. */
 static bool starts_with(const char *text, const char *prefix)
 {
     return text && prefix && strncmp(text, prefix, strlen(prefix)) == 0;
 }
 
+/** @brief Find an exact name in one completion command table. */
 static const sh_cmd_t *find_exact_in(const sh_cmd_t *commands, size_t count,
                                      const char *name)
 {
@@ -54,6 +56,7 @@ static const sh_cmd_t *find_exact_in(const sh_cmd_t *commands, size_t count,
     return NULL;
 }
 
+/** @brief Resolve an exact name across the active completion level. */
 static const sh_cmd_t *find_exact_level(sh_t *shell,
                                         const sh_completion_level_t *level,
                                         const char *name)
@@ -77,6 +80,7 @@ static const sh_cmd_t *find_exact_level(sh_t *shell,
     return find_exact_in(level->secondary, level->secondary_count, name);
 }
 
+/** @brief Return the maximum candidate count for one completion level. */
 static size_t level_limit(const sh_t *shell,
                           const sh_completion_level_t *level)
 {
@@ -95,6 +99,7 @@ static size_t level_limit(const sh_t *shell,
     return level->primary_count + level->secondary_count;
 }
 
+/** @brief Fetch one visible static or provider-backed completion candidate. */
 static bool level_candidate(sh_t *shell, const sh_completion_level_t *level,
                             size_t index, const char **name)
 {
@@ -146,6 +151,7 @@ static bool level_candidate(sh_t *shell, const sh_completion_level_t *level,
     return true;
 }
 
+/** @brief Count the identical leading bytes shared by two candidates. */
 static size_t common_prefix_len(const char *a, const char *b)
 {
     size_t i = 0u;
@@ -155,6 +161,7 @@ static size_t common_prefix_len(const char *a, const char *b)
     return i;
 }
 
+/** @brief Replace the token around the cursor with a completion result. */
 static int replace_token(sh_t *shell, size_t start, size_t end,
                          const char *replacement, bool append_space)
 {
@@ -191,6 +198,7 @@ static int replace_token(sh_t *shell, size_t start, size_t end,
     return SH_OK;
 }
 
+/** @brief Print bounded alternatives for an ambiguous completion. */
 static void print_matches(sh_t *shell, const sh_completion_level_t *level,
                           const char *prefix, size_t match_count)
 {
@@ -217,6 +225,7 @@ static void print_matches(sh_t *shell, const sh_completion_level_t *level,
     sh_redraw_line_internal(shell);
 }
 
+/** @brief Complete the token at the cursor or display matching alternatives. */
 int sh_complete_line_internal(sh_t *shell)
 {
     char left[SH_MAX_LINE_LEN + 1u];

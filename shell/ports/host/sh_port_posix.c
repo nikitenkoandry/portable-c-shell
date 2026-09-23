@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 
+/** @brief Convert saved POSIX termios flags to raw byte-oriented input. */
 static void sh_host_make_raw(struct termios *mode)
 {
     mode->c_iflag &= (tcflag_t)~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
@@ -16,6 +17,7 @@ static void sh_host_make_raw(struct termios *mode)
     mode->c_cc[VTIME] = 0;
 }
 
+/** @brief Open standard input and enable raw POSIX terminal mode when possible. */
 int sh_host_terminal_open(sh_host_terminal_t *terminal)
 {
     struct termios raw_mode;
@@ -43,6 +45,7 @@ int sh_host_terminal_open(sh_host_terminal_t *terminal)
     return SH_HOST_TERMINAL_SUCCESS;
 }
 
+/** @brief Read one blocking byte or EOF from POSIX standard input. */
 int sh_host_terminal_read_byte(sh_host_terminal_t *terminal,
                                unsigned char *byte_out)
 {
@@ -65,6 +68,7 @@ int sh_host_terminal_read_byte(sh_host_terminal_t *terminal,
     return SH_HOST_TERMINAL_ERROR;
 }
 
+/** @brief Restore the saved POSIX terminal mode. */
 int sh_host_terminal_close(sh_host_terminal_t *terminal)
 {
     int result = SH_HOST_TERMINAL_SUCCESS;

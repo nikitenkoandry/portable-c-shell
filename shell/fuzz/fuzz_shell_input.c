@@ -29,6 +29,7 @@ typedef struct {
     unsigned char after[HARNESS_CANARY_SIZE];
 } guarded_history_t;
 
+/** @brief Discards output emitted while fuzzing the input parser. */
 static void discard_output(const char *data, size_t len, void *ctx)
 {
     (void)data;
@@ -36,11 +37,13 @@ static void discard_output(const char *data, size_t len, void *ctx)
     (void)ctx;
 }
 
+/** @brief Fills a guard region with the harness canary value. */
 static void set_guard(unsigned char *guard)
 {
     memset(guard, HARNESS_CANARY_VALUE, HARNESS_CANARY_SIZE);
 }
 
+/** @brief Checks whether a guard region still contains its canary value. */
 static int guard_is_valid(const unsigned char *guard)
 {
     size_t i;
@@ -53,6 +56,7 @@ static int guard_is_valid(const unsigned char *guard)
     return 1;
 }
 
+/** @brief Aborts when shell state or guarded storage is corrupted. */
 static void verify_state(const sh_t *shell,
                          const guarded_line_t *line,
                          const guarded_argv_t *argv,
@@ -76,6 +80,7 @@ static void verify_state(const sh_t *shell,
     }
 }
 
+/** @brief Feeds arbitrary chunked input to a guarded shell instance. */
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
     sh_t shell;

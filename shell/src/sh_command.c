@@ -8,6 +8,7 @@ void sh_writef_internal(sh_t *shell, const char *fmt, ...);
 void sh_history_add_internal(sh_t *shell, const char *line);
 int sh_complete_line_internal(sh_t *shell);
 
+/** @brief Find an exact command name in one sibling table. */
 static const sh_cmd_t *find_child(const sh_cmd_t *commands, size_t count, const char *name)
 {
     size_t i;
@@ -19,6 +20,7 @@ static const sh_cmd_t *find_child(const sh_cmd_t *commands, size_t count, const 
     return NULL;
 }
 
+/** @brief Print visible command names and their short help text. */
 static void print_command_list(sh_t *shell, const sh_cmd_t *commands, size_t count)
 {
     size_t i;
@@ -32,6 +34,7 @@ static void print_command_list(sh_t *shell, const sh_cmd_t *commands, size_t cou
     }
 }
 
+/** @brief Print roots from the active flat table or modular command sets. */
 static void print_root_command_list(sh_t *shell)
 {
     size_t i;
@@ -46,6 +49,7 @@ static void print_root_command_list(sh_t *shell)
     print_command_list(shell, shell->commands, shell->command_count);
 }
 
+/** @brief Print root help or detailed help for one resolved command. */
 static void print_help_for(sh_t *shell, const sh_cmd_t *cmd, const char *path)
 {
     if (!cmd) {
@@ -80,6 +84,7 @@ static void print_help_for(sh_t *shell, const sh_cmd_t *cmd, const char *path)
     }
 }
 
+/** @brief Resolve the longest matching command path from an argument vector. */
 const sh_cmd_t *sh_resolve_command_internal(sh_t *shell, int argc, char **argv, int *consumed, char *path, size_t path_size)
 {
     const sh_cmd_t *cmd = NULL;
@@ -125,6 +130,7 @@ const sh_cmd_t *sh_resolve_command_internal(sh_t *shell, int argc, char **argv, 
     return cmd;
 }
 
+/** @brief Execute the built-in history command. */
 static int builtin_history(sh_t *shell, int argc, char **argv)
 {
     size_t i;
@@ -154,6 +160,7 @@ static int builtin_history(sh_t *shell, int argc, char **argv)
     return SH_OK;
 }
 
+/** @brief Execute the built-in echo control command. */
 static int builtin_echo(sh_t *shell, int argc, char **argv)
 {
     if (argc == 1 || (argc == 2 && strcmp(argv[1], "status") == 0)) {
@@ -174,6 +181,7 @@ static int builtin_echo(sh_t *shell, int argc, char **argv)
     return SH_ERR_INVALID_ARG;
 }
 
+/** @brief Resolve built-ins or application commands and invoke the handler. */
 int sh_command_dispatch_internal(sh_t *shell, int argc, char **argv)
 {
     const sh_cmd_t *cmd;
@@ -262,6 +270,7 @@ int sh_command_dispatch_internal(sh_t *shell, int argc, char **argv)
     }
 }
 
+/** @brief Validate one command name as a nonempty printable token. */
 static bool is_valid_command_name(const char *name)
 {
     const unsigned char *p = (const unsigned char *)name;
@@ -278,6 +287,7 @@ static bool is_valid_command_name(const char *name)
     return true;
 }
 
+/** @brief Check whether a root name belongs to an enabled built-in. */
 static bool is_reserved_root_name(const char *name)
 {
     static const char *const reserved[] = { "clear", "echo", "help", "history" };
@@ -291,6 +301,7 @@ static bool is_reserved_root_name(const char *name)
     return false;
 }
 
+/** @brief Recursively validate one command-tree level and its descendants. */
 static int validate_command_level(const sh_cmd_t *commands, size_t count,
                                   size_t depth, bool root,
                                   bool builtins_enabled)
@@ -334,6 +345,7 @@ static int validate_command_level(const sh_cmd_t *commands, size_t count,
     return SH_OK;
 }
 
+/** @brief Validate and install one flat root command table. */
 int sh_register_commands(sh_t *shell, const sh_cmd_t *commands, size_t count)
 {
     int status;
@@ -353,6 +365,7 @@ int sh_register_commands(sh_t *shell, const sh_cmd_t *commands, size_t count)
     return SH_OK;
 }
 
+/** @brief Validate and install independent root command sets. */
 int sh_register_command_sets(sh_t *shell, const sh_command_set_t *sets,
                              size_t set_count)
 {

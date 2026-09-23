@@ -8,6 +8,7 @@ typedef struct {
     int exit_requested;
 } host_app_t;
 
+/** @brief Writes shell output to the host standard output stream. */
 static void host_write(const char *data, size_t len, void *ctx)
 {
     (void)ctx;
@@ -15,6 +16,7 @@ static void host_write(const char *data, size_t len, void *ctx)
     (void)fflush(stdout);
 }
 
+/** @brief Implements the demo ping command. */
 static int cmd_ping(sh_t *shell, int argc, char **argv, void *ctx)
 {
     (void)argc;
@@ -23,6 +25,7 @@ static int cmd_ping(sh_t *shell, int argc, char **argv, void *ctx)
     return sh_puts(shell, "pong\r\n");
 }
 
+/** @brief Prints every payload argument received by a demo command. */
 static int cmd_print_args(sh_t *shell, int argc, char **argv, void *ctx)
 {
     int i;
@@ -38,6 +41,7 @@ static int cmd_print_args(sh_t *shell, int argc, char **argv, void *ctx)
     return result;
 }
 
+/** @brief Confirms a sensitive argument without echoing its value. */
 static int cmd_secret_arg(sh_t *shell, int argc, char **argv, void *ctx)
 {
     (void)argc;
@@ -46,6 +50,7 @@ static int cmd_secret_arg(sh_t *shell, int argc, char **argv, void *ctx)
     return sh_puts(shell, "stored <hidden>\r\n");
 }
 
+/** @brief Reports the simulated Wi-Fi connection state. */
 static int cmd_wifi_status(sh_t *shell, int argc, char **argv, void *ctx)
 {
     (void)argc;
@@ -54,6 +59,7 @@ static int cmd_wifi_status(sh_t *shell, int argc, char **argv, void *ctx)
     return sh_puts(shell, "wifi: disconnected\r\n");
 }
 
+/** @brief Requests termination of the interactive host example. */
 static int cmd_exit(sh_t *shell, int argc, char **argv, void *ctx)
 {
     host_app_t *app = (host_app_t *)ctx;
@@ -64,6 +70,7 @@ static int cmd_exit(sh_t *shell, int argc, char **argv, void *ctx)
     return sh_puts(shell, "bye\r\n");
 }
 
+/** @brief Enumerates interface-name candidates for argument completion. */
 static const char *interface_completion(sh_t *shell, size_t arg_index,
                                         size_t candidate_index, void *ctx)
 {
@@ -113,6 +120,7 @@ static const sh_cmd_t root_cmds[] = {
 SH_STORAGE_DEFINE(host_storage, SH_MAX_LINE_LEN, SH_MAX_ARGC,
                   SH_HISTORY_DEFAULT_DEPTH);
 
+/** @brief Prints the compiled shell limits and static storage size. */
 static void print_limits(void)
 {
     size_t storage_bytes = sizeof(host_storage_line) + sizeof(host_storage_argv) +
@@ -127,6 +135,7 @@ static void print_limits(void)
     printf("host_storage_bytes=%u\n", (unsigned)storage_bytes);
 }
 
+/** @brief Feeds a file to the shell as a non-interactive input script. */
 static int run_script(sh_t *shell, const char *path, host_app_t *app)
 {
     unsigned char buffer[17];
@@ -159,6 +168,7 @@ static int run_script(sh_t *shell, const char *path, host_app_t *app)
     return 0;
 }
 
+/** @brief Parses command-line options accepted by the host example. */
 static int parse_options(int argc, char **argv, const char **script_path,
                          int *ansi_enabled)
 {
@@ -184,6 +194,7 @@ static int parse_options(int argc, char **argv, const char **script_path,
     return 0;
 }
 
+/** @brief Runs the portable shell host demonstration program. */
 int main(int argc, char **argv)
 {
     static sh_t shell;

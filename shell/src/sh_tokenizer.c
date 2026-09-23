@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <limits.h>
 
+/** @brief Split a writable command line into quoted and escaped tokens. */
 int sh_tokenize(char *line, char **argv, size_t argv_capacity, int *argc_out)
 {
     size_t argc = 0u;
@@ -69,6 +70,7 @@ int sh_tokenize(char *line, char **argv, size_t argv_capacity, int *argc_out)
     return SH_OK;
 }
 
+/** @brief Map a shell status value to a stable diagnostic string. */
 const char *sh_status_string(int status)
 {
     switch (status) {

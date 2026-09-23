@@ -21,8 +21,13 @@
  * - platform_shell_yield_from_isr() performs the port-specific ISR yield when
  *   higher_priority_task_woken is non-zero.
  */
+/** @brief Submits a byte range to the board UART transmitter. */
 size_t platform_shell_uart_write(const uint8_t *data, size_t len);
+
+/** @brief Waits until the board UART transmitter can accept more data. */
 void platform_shell_uart_wait_tx_ready(void);
+
+/** @brief Performs the board-specific context switch requested by an ISR. */
 void platform_shell_yield_from_isr(BaseType_t higher_priority_task_woken);
 
 #ifndef APP_SHELL_RX_STREAM_BYTES
@@ -77,6 +82,7 @@ typedef struct {
     char draft[SH_MAX_LINE_LEN + 1u];
 } app_shell_t;
 
+/** @brief Initializes the FreeRTOS streams, adapter, shell, and commands. */
 int app_shell_init(app_shell_t *app,
                    const sh_cmd_t *commands,
                    size_t command_count)
@@ -137,7 +143,7 @@ int app_shell_init(app_shell_t *app,
     return sh_register_commands(&app->shell, commands, command_count);
 }
 
-/* Call this helper from the board UART RX ISR after collecting one chunk. */
+/** @brief Passes one UART RX chunk from an interrupt into the shell stream. */
 BaseType_t app_shell_uart_rx_from_isr(app_shell_t *app,
                                       const uint8_t *data,
                                       size_t len)
@@ -159,7 +165,7 @@ BaseType_t app_shell_uart_rx_from_isr(app_shell_t *app,
     return result;
 }
 
-/* Create one FreeRTOS task with this entry point for the shell parser. */
+/** @brief Runs the shell parser task until the adapter is stopped. */
 void app_shell_task(void *arg)
 {
     app_shell_t *app = (app_shell_t *)arg;
@@ -169,10 +175,11 @@ void app_shell_task(void *arg)
     }
 }
 
-/*
- * Create a second FreeRTOS task with this entry point for UART transmission.
+/**
+ * @brief Drains shell output to UART while handling partial writes.
+ *
  * The platform write hook may accept a partial chunk; zero means temporary
- * backpressure and must be followed by a blocking/yielding wait hook.
+ * backpressure and must be followed by a blocking or yielding wait hook.
  */
 void app_shell_tx_task(void *arg)
 {

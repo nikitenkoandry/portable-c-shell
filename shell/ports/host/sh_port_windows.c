@@ -21,6 +21,7 @@
 #define DISABLE_NEWLINE_AUTO_RETURN 0x0008u
 #endif
 
+/** @brief Queue one normalized byte sequence for repeated delivery. */
 static int sh_host_queue_sequence(sh_host_terminal_t *terminal,
                                   const unsigned char *sequence,
                                   size_t length,
@@ -37,6 +38,7 @@ static int sh_host_queue_sequence(sh_host_terminal_t *terminal,
     return SH_HOST_TERMINAL_SUCCESS;
 }
 
+/** @brief Return the next queued byte and maintain key-repeat state. */
 static int sh_host_take_queued_byte(sh_host_terminal_t *terminal,
                                     unsigned char *byte_out)
 {
@@ -59,6 +61,7 @@ static int sh_host_take_queued_byte(sh_host_terminal_t *terminal,
     return SH_HOST_TERMINAL_READ_BYTE;
 }
 
+/** @brief Translate a Windows navigation key into an ANSI sequence. */
 static int sh_host_queue_special_key(sh_host_terminal_t *terminal,
                                      WORD virtual_key,
                                      WORD repeat_count)
@@ -112,6 +115,7 @@ static int sh_host_queue_special_key(sh_host_terminal_t *terminal,
                : SH_HOST_TERMINAL_ERROR;
 }
 
+/** @brief Convert one UTF-16 console key event into queued UTF-8 bytes. */
 static int sh_host_queue_unicode(sh_host_terminal_t *terminal,
                                  WCHAR character,
                                  WORD repeat_count)
@@ -162,6 +166,7 @@ static int sh_host_queue_unicode(sh_host_terminal_t *terminal,
                : SH_HOST_TERMINAL_ERROR;
 }
 
+/** @brief Open Windows standard input and configure console byte input. */
 int sh_host_terminal_open(sh_host_terminal_t *terminal)
 {
     HANDLE input_handle;
@@ -224,6 +229,7 @@ int sh_host_terminal_open(sh_host_terminal_t *terminal)
     return SH_HOST_TERMINAL_SUCCESS;
 }
 
+/** @brief Read one normalized byte from console events or redirected input. */
 int sh_host_terminal_read_byte(sh_host_terminal_t *terminal,
                                unsigned char *byte_out)
 {
@@ -293,6 +299,7 @@ int sh_host_terminal_read_byte(sh_host_terminal_t *terminal,
     }
 }
 
+/** @brief Restore saved Windows console modes and clear queued input. */
 int sh_host_terminal_close(sh_host_terminal_t *terminal)
 {
     int result = SH_HOST_TERMINAL_SUCCESS;

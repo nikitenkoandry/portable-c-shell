@@ -1,5 +1,6 @@
 #include "sh_transport.h"
 
+/** @brief Check whether a callback returned a supported transport status. */
 static int is_callback_status(sh_transport_status_t status)
 {
     return status == SH_TRANSPORT_OK ||
@@ -7,6 +8,7 @@ static int is_callback_status(sh_transport_status_t status)
            status == SH_TRANSPORT_ERR_IO;
 }
 
+/** @brief Complete a write using a bounded number of partial attempts. */
 sh_transport_status_t sh_transport_write_all(
     const sh_transport_t *transport,
     const uint8_t *data,
@@ -81,6 +83,7 @@ sh_transport_status_t sh_transport_write_all(
     return SH_TRANSPORT_ERR_ATTEMPTS_EXHAUSTED;
 }
 
+/** @brief Flush a transport or succeed when no flush callback is installed. */
 sh_transport_status_t sh_transport_flush(const sh_transport_t *transport)
 {
     sh_transport_status_t status;

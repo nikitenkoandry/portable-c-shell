@@ -1,21 +1,25 @@
 #include "sh_shell.h"
 #include <string.h>
 
+/** @brief Return the address of one physical slot in history storage. */
 static char *slot_at(const sh_t *shell, size_t physical)
 {
     return shell->history_storage + physical * shell->history_slot_size;
 }
 
+/** @brief Return the number of history slots owned by a shell. */
 size_t sh_history_capacity(const sh_t *shell)
 {
     return shell ? shell->history_depth : 0u;
 }
 
+/** @brief Return the number of currently populated history entries. */
 size_t sh_history_count(const sh_t *shell)
 {
     return shell ? shell->history_count : 0u;
 }
 
+/** @brief Clear history contents and reset navigation state. */
 void sh_history_clear(sh_t *shell)
 {
     if (!shell) {
@@ -32,6 +36,7 @@ void sh_history_clear(sh_t *shell)
     }
 }
 
+/** @brief Return one history entry indexed relative to the newest command. */
 const char *sh_history_get_newest(const sh_t *shell, size_t newest_index)
 {
     size_t logical;
@@ -46,6 +51,7 @@ const char *sh_history_get_newest(const sh_t *shell, size_t newest_index)
     return slot_at(shell, physical);
 }
 
+/** @brief Add a nonempty, nonduplicate line to the fixed history ring. */
 void sh_history_add_internal(sh_t *shell, const char *line)
 {
     size_t len;

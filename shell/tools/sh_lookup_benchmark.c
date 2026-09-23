@@ -9,6 +9,7 @@
 
 SH_STORAGE_DEFINE(benchmark_storage, 64u, 2u, 0u);
 
+/** @brief Handles a benchmark command without producing side effects. */
 static int command_handler(sh_t *shell, int argc, char **argv, void *ctx)
 {
     (void)shell;
@@ -18,6 +19,7 @@ static int command_handler(sh_t *shell, int argc, char **argv, void *ctx)
     return SH_OK;
 }
 
+/** @brief Discards shell output generated during benchmark iterations. */
 static void discard_output(const char *data, size_t len, void *ctx)
 {
     (void)data;
@@ -25,6 +27,7 @@ static void discard_output(const char *data, size_t len, void *ctx)
     (void)ctx;
 }
 
+/** @brief Builds the synthetic command table used by the lookup benchmark. */
 static void initialize_commands(sh_cmd_t *commands,
                                 char names[BENCHMARK_MAX_COMMANDS][12])
 {
@@ -41,6 +44,7 @@ static void initialize_commands(sh_cmd_t *commands,
     }
 }
 
+/** @brief Measures linear command lookup time for several table sizes. */
 int main(void)
 {
     static const size_t sizes[] = { 16u, 64u, 128u, 256u };

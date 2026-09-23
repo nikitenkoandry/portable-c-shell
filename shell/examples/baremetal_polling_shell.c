@@ -11,6 +11,7 @@ typedef struct {
     char draft[SH_MAX_LINE_LEN + 1u];
 } bm_shell_t;
 
+/** @brief Initializes a statically allocated polling shell instance. */
 int bm_shell_init(bm_shell_t *instance,
                   const sh_cmd_t *commands,
                   size_t command_count,
@@ -50,11 +51,13 @@ int bm_shell_init(bm_shell_t *instance,
     return sh_register_commands(&instance->shell, commands, command_count);
 }
 
+/** @brief Starts the bare-metal shell and emits its prompt. */
 int bm_shell_start(bm_shell_t *instance)
 {
     return instance != NULL ? sh_start(&instance->shell) : SH_ERR_INVALID_ARG;
 }
 
+/** @brief Processes up to the requested number of transport input bytes. */
 sh_port_baremetal_poll_result_t bm_shell_poll(bm_shell_t *instance,
                                               size_t byte_budget)
 {

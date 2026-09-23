@@ -16,6 +16,7 @@ typedef struct {
 
 SH_STORAGE_DEFINE(loopback_storage, 96u, 12u, 8u);
 
+/** @brief Reads the next chunk from the in-memory loopback input. */
 static sh_tcp_io_status_t loopback_read(void *ctx, uint8_t *data,
                                         size_t capacity, size_t *read_count)
 {
@@ -37,6 +38,7 @@ static sh_tcp_io_status_t loopback_read(void *ctx, uint8_t *data,
     return SH_TCP_IO_OK;
 }
 
+/** @brief Writes a deliberately partial loopback chunk to standard output. */
 static sh_tcp_io_status_t loopback_write(void *ctx, const uint8_t *data,
                                          size_t len, size_t *written)
 {
@@ -54,12 +56,14 @@ static sh_tcp_io_status_t loopback_write(void *ctx, const uint8_t *data,
     return SH_TCP_IO_OK;
 }
 
+/** @brief Records closure of the simulated TCP connection. */
 static void loopback_close(void *ctx)
 {
     loopback_io_t *io = (loopback_io_t *)ctx;
     io->close_calls++;
 }
 
+/** @brief Prints the identity attached to the current TCP session. */
 static int cmd_whoami(sh_t *shell, int argc, char **argv, void *user_ctx)
 {
     const loopback_auth_t *auth = (const loopback_auth_t *)user_ctx;
@@ -73,6 +77,7 @@ static const sh_cmd_t commands[] = {
     SH_CMD_ARG("whoami", "", "Show session identity", cmd_whoami, 1u, 1u)
 };
 
+/** @brief Runs a complete shell session over an in-memory TCP loopback. */
 int main(void)
 {
     static const uint8_t input[] = "whoami\rhistory status\r";

@@ -9,6 +9,7 @@ typedef struct {
     size_t history_depth;
 } memory_profile_t;
 
+/** @brief Prints the static memory cost of one shell configuration profile. */
 static void print_profile(const memory_profile_t *profile)
 {
     size_t line_bytes = profile->line_max + 1u;
@@ -32,6 +33,7 @@ static void print_profile(const memory_profile_t *profile)
            (unsigned long)(sizeof(sh_t) + buffers_total));
 }
 
+/** @brief Reports shell object and buffer sizes for representative profiles. */
 int main(void)
 {
     static const memory_profile_t profiles[] = {

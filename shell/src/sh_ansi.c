@@ -6,6 +6,7 @@ enum {
     SH_ANSI_STATE_CSI
 };
 
+/** @brief Return the decoder to idle after a complete or rejected sequence. */
 static void sh_ansi_finish_sequence(sh_ansi_decoder_t *decoder)
 {
     decoder->state = SH_ANSI_STATE_IDLE;
@@ -13,16 +14,19 @@ static void sh_ansi_finish_sequence(sh_ansi_decoder_t *decoder)
     decoder->csi_overflow = false;
 }
 
+/** @brief Check whether a byte terminates a CSI sequence. */
 static bool sh_ansi_is_final_byte(unsigned char byte)
 {
     return byte >= 0x40u && byte <= 0x7eu;
 }
 
+/** @brief Check whether a byte may occur before the CSI final byte. */
 static bool sh_ansi_is_parameter_or_intermediate(unsigned char byte)
 {
     return byte >= 0x20u && byte <= 0x3fu;
 }
 
+/** @brief Decode one completed CSI payload into an editor key event. */
 static sh_ansi_event_t sh_ansi_decode_csi(const sh_ansi_decoder_t *decoder,
                                           unsigned char final_byte)
 {
@@ -61,6 +65,7 @@ static sh_ansi_event_t sh_ansi_decode_csi(const sh_ansi_decoder_t *decoder,
     }
 }
 
+/** @brief Reset an ANSI decoder to its idle state. */
 void sh_ansi_reset(sh_ansi_decoder_t *decoder)
 {
     if (decoder == NULL) {
@@ -73,11 +78,13 @@ void sh_ansi_reset(sh_ansi_decoder_t *decoder)
     decoder->last_byte_consumed = false;
 }
 
+/** @brief Initialize an ANSI decoder. */
 void sh_ansi_init(sh_ansi_decoder_t *decoder)
 {
     sh_ansi_reset(decoder);
 }
 
+/** @brief Feed one byte into the incremental ANSI decoder. */
 sh_ansi_event_t sh_ansi_feed(sh_ansi_decoder_t *decoder, unsigned char byte)
 {
     sh_ansi_event_t event;
@@ -140,11 +147,13 @@ sh_ansi_event_t sh_ansi_feed(sh_ansi_decoder_t *decoder, unsigned char byte)
     return SH_ANSI_EVENT_NONE;
 }
 
+/** @brief Report whether the decoder consumed the last supplied byte. */
 bool sh_ansi_last_byte_consumed(const sh_ansi_decoder_t *decoder)
 {
     return decoder != NULL && decoder->last_byte_consumed;
 }
 
+/** @brief Report whether an escape sequence is currently incomplete. */
 bool sh_ansi_is_active(const sh_ansi_decoder_t *decoder)
 {
     return decoder != NULL && decoder->state != SH_ANSI_STATE_IDLE;

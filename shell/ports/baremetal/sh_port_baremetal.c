@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+/** @brief Initialize a caller-owned nonblocking bare-metal adapter. */
 sh_port_baremetal_status_t sh_port_baremetal_init(
     sh_port_baremetal_t *port,
     sh_t *shell,
@@ -27,6 +28,7 @@ sh_port_baremetal_status_t sh_port_baremetal_init(
     return SH_PORT_BAREMETAL_OK;
 }
 
+/** @brief Forward a bounded number of available RX bytes to the shell. */
 sh_port_baremetal_poll_result_t sh_port_baremetal_poll(
     sh_port_baremetal_t *port,
     size_t max_bytes_per_poll)
@@ -66,6 +68,7 @@ sh_port_baremetal_poll_result_t sh_port_baremetal_poll(
     return result;
 }
 
+/** @brief Return the cumulative number of receive callback errors. */
 size_t sh_port_baremetal_read_error_count(
     const sh_port_baremetal_t *port)
 {
@@ -76,6 +79,7 @@ size_t sh_port_baremetal_read_error_count(
     return port->read_error_count;
 }
 
+/** @brief Reset the cumulative receive error counter. */
 void sh_port_baremetal_clear_read_errors(
     sh_port_baremetal_t *port)
 {
@@ -84,6 +88,7 @@ void sh_port_baremetal_clear_read_errors(
     }
 }
 
+/** @brief Return the stable shell transport embedded in the adapter. */
 const sh_transport_t *sh_port_baremetal_transport(
     const sh_port_baremetal_t *port)
 {
@@ -94,6 +99,7 @@ const sh_transport_t *sh_port_baremetal_transport(
     return &port->transport;
 }
 
+/** @brief Map a bare-metal write callback result to shell transport status. */
 sh_transport_status_t sh_port_baremetal_transport_write(
     void *ctx,
     const uint8_t *data,

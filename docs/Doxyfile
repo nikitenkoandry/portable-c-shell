@@ -1,15 +1,16 @@
 PROJECT_NAME           = "Portable C Shell"
 PROJECT_BRIEF          = "Heap-free portable C99 command shell"
 OUTPUT_DIRECTORY       = build-docs
-INPUT                  = shell/include shell/ports
-FILE_PATTERNS           = *.h
+INPUT                  = shell/include shell/src shell/ports shell/examples \
+                         shell/tools shell/fuzz
+FILE_PATTERNS           = *.h *.c
 RECURSIVE               = YES
 
 OPTIMIZE_OUTPUT_FOR_C   = YES
 JAVADOC_AUTOBRIEF       = YES
 MARKDOWN_SUPPORT        = YES
 EXTRACT_ALL             = NO
-EXTRACT_STATIC          = NO
+EXTRACT_STATIC          = YES
 HIDE_UNDOC_MEMBERS      = YES
 HIDE_UNDOC_CLASSES      = YES
 

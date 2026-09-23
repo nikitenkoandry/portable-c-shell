@@ -10,11 +10,13 @@ void sh_history_add_internal(sh_t *shell, const char *line);
 int sh_complete_line_internal(sh_t *shell);
 const sh_cmd_t *sh_resolve_command_internal(sh_t *shell, int argc, char **argv, int *consumed, char *path, size_t path_size);
 
+/** @brief Write internal shell text while intentionally ignoring output status. */
 void sh_write_internal(sh_t *shell, const char *text)
 {
     (void)sh_puts(shell, text);
 }
 
+/** @brief Format internal shell text while intentionally ignoring output status. */
 void sh_writef_internal(sh_t *shell, const char *fmt, ...)
 {
     va_list ap;
@@ -23,6 +25,7 @@ void sh_writef_internal(sh_t *shell, const char *fmt, ...)
     va_end(ap);
 }
 
+/** @brief Clear a memory range through volatile writes. */
 static void secure_zero(void *data, size_t len)
 {
     volatile unsigned char *bytes = (volatile unsigned char *)data;
@@ -33,6 +36,7 @@ static void secure_zero(void *data, size_t len)
     }
 }
 
+/** @brief Write an exact byte range through the configured shell backend. */
 int sh_write(sh_t *shell, const void *data, size_t len)
 {
     if (!shell || (!data && len != 0u)) {
@@ -62,6 +66,7 @@ int sh_write(sh_t *shell, const void *data, size_t len)
     return SH_OK;
 }
 
+/** @brief Write a NUL-terminated string without adding a line ending. */
 int sh_puts(sh_t *shell, const char *text)
 {
     if (!text) {
@@ -70,6 +75,7 @@ int sh_puts(sh_t *shell, const char *text)
     return sh_write(shell, text, strlen(text));
 }
 
+/** @brief Format and write text from an existing variable argument list. */
 int sh_vprintf(sh_t *shell, const char *fmt, va_list ap)
 {
     char buf[256];
@@ -89,6 +95,7 @@ int sh_vprintf(sh_t *shell, const char *fmt, va_list ap)
     return sh_write(shell, buf, (size_t)count);
 }
 
+/** @brief Format and write text using printf-style arguments. */
 int sh_printf(sh_t *shell, const char *fmt, ...)
 {
     int status;
@@ -100,6 +107,7 @@ int sh_printf(sh_t *shell, const char *fmt, ...)
     return status;
 }
 
+/** @brief Flush the configured status-capable transport. */
 int sh_flush(sh_t *shell)
 {
     sh_transport_status_t status;
@@ -120,6 +128,7 @@ int sh_flush(sh_t *shell)
     return SH_ERR_TRANSPORT;
 }
 
+/** @brief Populate a shell configuration with supported defaults. */
 void sh_default_config(sh_config_t *cfg)
 {
     if (!cfg) {
@@ -137,6 +146,7 @@ void sh_default_config(sh_config_t *cfg)
     cfg->transport_write_attempts = 8u;
 }
 
+/** @brief Initialize a shell with explicit caller-owned storage buffers. */
 int sh_init(sh_t *shell,
             const sh_config_t *cfg,
             char *line_buffer,
@@ -207,6 +217,7 @@ int sh_init(sh_t *shell,
     return SH_OK;
 }
 
+/** @brief Initialize a shell from a compact static storage descriptor. */
 int sh_init_static(sh_t *shell, const sh_config_t *cfg,
                    const sh_storage_t *storage)
 {
@@ -221,11 +232,13 @@ int sh_init_static(sh_t *shell, const sh_config_t *cfg,
                    storage->draft_buffer, storage->draft_buffer_size);
 }
 
+/** @brief Emit the configured interactive prompt using best-effort output. */
 void sh_prompt(sh_t *shell)
 {
     sh_write_internal(shell, shell && shell->cfg.prompt ? shell->cfg.prompt : "sh> ");
 }
 
+/** @brief Start an interactive shell session and emit its first prompt. */
 int sh_start(sh_t *shell)
 {
     int status;
@@ -244,6 +257,7 @@ int sh_start(sh_t *shell)
     return status;
 }
 
+/** @brief Stop a shell session, reset ANSI state, and flush output. */
 int sh_stop(sh_t *shell)
 {
     if (!shell) {
@@ -254,6 +268,7 @@ int sh_stop(sh_t *shell)
     return sh_flush(shell);
 }
 
+/** @brief Change the runtime input-echo state. */
 void sh_set_echo_enabled(sh_t *shell, bool enabled)
 {
     if (shell) {
@@ -261,11 +276,13 @@ void sh_set_echo_enabled(sh_t *shell, bool enabled)
     }
 }
 
+/** @brief Report whether interactive input echo is enabled. */
 bool sh_echo_is_enabled(const sh_t *shell)
 {
     return shell ? shell->echo_enabled : false;
 }
 
+/** @brief Replace the editable line and place the cursor at its end. */
 static void set_line(sh_t *shell, const char *line)
 {
     size_t len = strlen(line);
@@ -278,6 +295,7 @@ static void set_line(sh_t *shell, const char *line)
     shell->cursor = len;
 }
 
+/** @brief Locate one token's byte span in the original unparsed line. */
 static bool raw_token_span(const char *line, size_t token_index,
                            size_t *start_out, size_t *end_out)
 {
@@ -322,6 +340,7 @@ static bool raw_token_span(const char *line, size_t token_index,
     return false;
 }
 
+/** @brief Return the quote character left open at the end of a line. */
 static char unmatched_quote(const char *line)
 {
     char quote = '\0';
@@ -344,6 +363,7 @@ static char unmatched_quote(const char *line)
     return quote;
 }
 
+/** @brief Build an echo-safe copy of the current line with secrets masked. */
 static void build_display_line(sh_t *shell, char *display, size_t display_size)
 {
     char parse[SH_MAX_LINE_LEN + 2u];
@@ -401,6 +421,7 @@ static void build_display_line(sh_t *shell, char *display, size_t display_size)
     }
 }
 
+/** @brief Redraw the prompt, masked line, and cursor position. */
 void sh_redraw_line_internal(sh_t *shell)
 {
     char display[SH_MAX_LINE_LEN + 1u];
@@ -417,6 +438,7 @@ void sh_redraw_line_internal(sh_t *shell)
     }
 }
 
+/** @brief Move through history while preserving and restoring the draft line. */
 static void move_history(sh_t *shell, int direction)
 {
     const char *entry;
@@ -453,6 +475,7 @@ static void move_history(sh_t *shell, int direction)
     sh_redraw_line_internal(shell);
 }
 
+/** @brief Insert one printable character at the current cursor position. */
 static int insert_char(sh_t *shell, char c)
 {
     bool append_at_end;
@@ -479,6 +502,7 @@ static int insert_char(sh_t *shell, char c)
     return SH_OK;
 }
 
+/** @brief Delete the character immediately left of the cursor. */
 static void backspace(sh_t *shell)
 {
     if (shell->cursor == 0u) {
@@ -492,6 +516,7 @@ static void backspace(sh_t *shell)
     sh_redraw_line_internal(shell);
 }
 
+/** @brief Delete the character currently under the cursor. */
 static void delete_at_cursor(sh_t *shell)
 {
     if (shell->cursor >= shell->line_len) {
@@ -504,6 +529,7 @@ static void delete_at_cursor(sh_t *shell)
     sh_redraw_line_internal(shell);
 }
 
+/** @brief Clear the editable line and its saved history draft. */
 static void clear_input_line(sh_t *shell)
 {
     shell->line_len = 0u;
@@ -520,6 +546,7 @@ static void clear_input_line(sh_t *shell)
     sh_redraw_line_internal(shell);
 }
 
+/** @brief Delete whitespace and the preceding word left of the cursor. */
 static void delete_word_left(sh_t *shell)
 {
     size_t start = shell->cursor;
@@ -541,6 +568,7 @@ static void delete_word_left(sh_t *shell)
     sh_redraw_line_internal(shell);
 }
 
+/** @brief Cancel current input, reset decoder state, and print a new prompt. */
 static void cancel_input_line(sh_t *shell)
 {
     sh_write_internal(shell, "^C\r\n");
@@ -563,6 +591,7 @@ static void cancel_input_line(sh_t *shell)
     sh_prompt(shell);
 }
 
+/** @brief Execute the current line and reset editor state for the next prompt. */
 static int handle_enter(sh_t *shell)
 {
     char exec_buf[SH_MAX_LINE_LEN + 1u];
@@ -594,6 +623,7 @@ static int handle_enter(sh_t *shell)
     return status;
 }
 
+/** @brief Determine whether a token needs quoting in reconstructed history. */
 static bool token_needs_quotes(const char *token)
 {
     const unsigned char *p = (const unsigned char *)token;
@@ -610,6 +640,7 @@ static bool token_needs_quotes(const char *token)
     return false;
 }
 
+/** @brief Append one character to a bounded NUL-terminated string. */
 static void append_char(char *dst, size_t dst_size, char value)
 {
     size_t used = strlen(dst);
@@ -619,6 +650,7 @@ static void append_char(char *dst, size_t dst_size, char value)
     }
 }
 
+/** @brief Append one escaped token to a reconstructed command line. */
 static void append_token(char *dst, size_t dst_size, const char *token)
 {
     size_t used = strlen(dst);
@@ -643,6 +675,7 @@ static void append_token(char *dst, size_t dst_size, const char *token)
     }
 }
 
+/** @brief Build the history entry while applying command masking policy. */
 static bool build_history_line(sh_t *shell, const char *original,
                                int argc, char **argv, char *out, size_t out_size)
 {
@@ -690,6 +723,7 @@ static bool build_history_line(sh_t *shell, const char *original,
     return true;
 }
 
+/** @brief Apply one decoded ANSI navigation or editing event. */
 static void handle_escape_key(sh_t *shell, sh_ansi_event_t key)
 {
     switch (key) {
@@ -727,6 +761,7 @@ static void handle_escape_key(sh_t *shell, sh_ansi_event_t key)
     }
 }
 
+/** @brief Process one raw byte through ANSI decoding and line editing. */
 int sh_input_byte(sh_t *shell, unsigned char byte)
 {
     sh_ansi_event_t ansi_event;
@@ -773,6 +808,7 @@ int sh_input_byte(sh_t *shell, unsigned char byte)
     return SH_OK;
 }
 
+/** @brief Process a complete input block and preserve its first error status. */
 int sh_input(sh_t *shell, const unsigned char *data, size_t len)
 {
     size_t i;
@@ -790,16 +826,19 @@ int sh_input(sh_t *shell, const unsigned char *data, size_t len)
     return result;
 }
 
+/** @brief Forward one byte to the interactive input processor. */
 int sh_feed_byte(sh_t *shell, unsigned char byte)
 {
     return sh_input_byte(shell, byte);
 }
 
+/** @brief Forward a byte block to the interactive input processor. */
 int sh_feed(sh_t *shell, const unsigned char *data, size_t len)
 {
     return sh_input(shell, data, len);
 }
 
+/** @brief Dispatch an already-tokenized argument vector. */
 int sh_execute_argv(sh_t *shell, size_t argc, char **argv)
 {
     if (!shell || (argc != 0u && !argv) || argc > shell->argv_capacity ||
@@ -809,6 +848,7 @@ int sh_execute_argv(sh_t *shell, size_t argc, char **argv)
     return sh_command_dispatch_internal(shell, (int)argc, argv);
 }
 
+/** @brief Tokenize, record, and execute one complete command line. */
 int sh_execute_line(sh_t *shell, const char *line)
 {
     char parse_buf[SH_MAX_LINE_LEN + 1u];

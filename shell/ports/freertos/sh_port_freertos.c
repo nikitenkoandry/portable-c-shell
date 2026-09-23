@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <string.h>
 
+/** @brief Add to a diagnostics counter without wrapping UINT32_MAX. */
 static void counter_add(volatile uint32_t *counter, size_t amount)
 {
     uint32_t current;
@@ -19,6 +20,7 @@ static void counter_add(volatile uint32_t *counter, size_t amount)
     }
 }
 
+/** @brief Read the stop flag inside a FreeRTOS critical section. */
 static BaseType_t stop_is_requested(const sh_freertos_port_t *port)
 {
     BaseType_t requested;
@@ -29,6 +31,7 @@ static BaseType_t stop_is_requested(const sh_freertos_port_t *port)
     return requested;
 }
 
+/** @brief Initialize a FreeRTOS stream-buffer adapter without creating tasks. */
 int sh_freertos_init(sh_freertos_port_t *port,
                      const sh_freertos_config_t *config)
 {
@@ -49,6 +52,7 @@ int sh_freertos_init(sh_freertos_port_t *port,
     return SH_OK;
 }
 
+/** @brief Return the stable TX transport embedded in the adapter. */
 const sh_transport_t *sh_freertos_transport(sh_freertos_port_t *port)
 {
     if (port == NULL || port->transport.write == NULL) {
@@ -57,6 +61,7 @@ const sh_transport_t *sh_freertos_transport(sh_freertos_port_t *port)
     return &port->transport;
 }
 
+/** @brief Run the blocking RX loop in the application-owned shell task. */
 int sh_freertos_run(sh_freertos_port_t *port, sh_t *shell)
 {
     uint8_t input[SH_FREERTOS_MAX_READ_CHUNK];
@@ -117,6 +122,7 @@ int sh_freertos_run(sh_freertos_port_t *port, sh_t *shell)
     return SH_OK;
 }
 
+/** @brief Latch a task-context request to stop the shell loop. */
 void sh_freertos_request_stop(sh_freertos_port_t *port)
 {
     if (port == NULL) {
@@ -128,6 +134,7 @@ void sh_freertos_request_stop(sh_freertos_port_t *port)
     taskEXIT_CRITICAL();
 }
 
+/** @brief Clear a stop request while the shell loop is not running. */
 int sh_freertos_clear_stop(sh_freertos_port_t *port)
 {
     if (port == NULL) {
@@ -144,6 +151,7 @@ int sh_freertos_clear_stop(sh_freertos_port_t *port)
     return SH_OK;
 }
 
+/** @brief Report whether the FreeRTOS shell loop currently owns the port. */
 BaseType_t sh_freertos_is_running(const sh_freertos_port_t *port)
 {
     BaseType_t running;
@@ -158,6 +166,7 @@ BaseType_t sh_freertos_is_running(const sh_freertos_port_t *port)
     return running;
 }
 
+/** @brief Enqueue received bytes into the RX stream from interrupt context. */
 BaseType_t sh_freertos_rx_from_isr(
     sh_freertos_port_t *port,
     const uint8_t *data,
@@ -197,6 +206,7 @@ BaseType_t sh_freertos_rx_from_isr(
     return pdPASS;
 }
 
+/** @brief Enqueue shell output into the TX stream from task context. */
 sh_transport_status_t sh_freertos_transport_write(
     void *ctx,
     const uint8_t *data,
@@ -244,6 +254,7 @@ sh_transport_status_t sh_freertos_transport_write(
     return SH_TRANSPORT_WOULD_BLOCK;
 }
 
+/** @brief Copy an atomic snapshot of saturating adapter statistics. */
 int sh_freertos_get_stats(const sh_freertos_port_t *port,
                           sh_freertos_stats_t *stats)
 {
@@ -263,6 +274,7 @@ int sh_freertos_get_stats(const sh_freertos_port_t *port,
     return SH_OK;
 }
 
+/** @brief Reset statistics while the run loop is stopped. */
 int sh_freertos_reset_stats(sh_freertos_port_t *port)
 {
     if (port == NULL) {
