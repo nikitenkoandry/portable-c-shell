@@ -1,0 +1,33 @@
+PROJECT_NAME           = "Portable C Shell"
+PROJECT_BRIEF          = "Heap-free portable C99 command shell"
+OUTPUT_DIRECTORY       = build-docs
+INPUT                  = shell/include shell/ports
+FILE_PATTERNS           = *.h
+RECURSIVE               = YES
+
+OPTIMIZE_OUTPUT_FOR_C   = YES
+JAVADOC_AUTOBRIEF       = YES
+MARKDOWN_SUPPORT        = YES
+EXTRACT_ALL             = NO
+EXTRACT_STATIC          = NO
+HIDE_UNDOC_MEMBERS      = YES
+HIDE_UNDOC_CLASSES      = YES
+
+GENERATE_HTML           = YES
+GENERATE_LATEX          = NO
+HTML_OUTPUT             = html
+FULL_SIDEBAR            = YES
+TREEVIEW_WIDTH          = 280
+
+QUIET                   = YES
+WARNINGS                = YES
+WARN_IF_DOC_ERROR       = YES
+WARN_IF_UNDOCUMENTED    = NO
+WARN_AS_ERROR           = YES
+WARN_LOGFILE            = build-docs/doxygen-warnings.log
+
+MACRO_EXPANSION         = YES
+EXPAND_ONLY_PREDEF      = YES
+PREDEFINED              = _WIN32=1 \
+                          SH_STORAGE_DEFINE(name_,line_max_,argc_max_,history_depth_)= \
+                          SH_ARRAY_SIZE(a)=1

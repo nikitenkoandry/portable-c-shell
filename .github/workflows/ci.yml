@@ -1,0 +1,67 @@
+name: portable-shell-ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y doxygen
+      - run: doxygen docs/Doxyfile
+
+  gcc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cmake -S . -B build -G Ninja -DSH_WARNINGS_AS_ERRORS=ON
+      - run: cmake --build build
+      - run: ctest --test-dir build --output-on-failure
+
+  gcc-analyzer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: >-
+          cmake -S . -B build-analyzer -G Ninja
+          -DSH_ENABLE_GCC_ANALYZER=ON
+          -DSH_WARNINGS_AS_ERRORS=ON
+      - run: cmake --build build-analyzer
+
+  clang-sanitizers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: >-
+          cmake -S . -B build-sanitize -G Ninja
+          -DCMAKE_C_COMPILER=clang
+          -DSH_ENABLE_SANITIZERS=ON
+          -DSH_WARNINGS_AS_ERRORS=ON
+      - run: cmake --build build-sanitize
+      - run: ctest --test-dir build-sanitize --output-on-failure
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y gcovr
+      - run: >-
+          cmake -S . -B build-coverage -G Ninja
+          -DSH_ENABLE_COVERAGE=ON
+          -DSH_WARNINGS_AS_ERRORS=ON
+      - run: cmake --build build-coverage
+      - run: ctest --test-dir build-coverage --output-on-failure
+      - run: >-
+          gcovr --root . --filter shell/src
+          --fail-under-line 90 --fail-under-branch 85
+          --txt build-coverage/coverage.txt
+
+  msvc:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cmake -S . -B build -A x64 -DSH_WARNINGS_AS_ERRORS=ON
+      - run: cmake --build build --config Debug
+      - run: ctest --test-dir build -C Debug --output-on-failure

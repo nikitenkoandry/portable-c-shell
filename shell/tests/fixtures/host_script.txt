@@ -1,0 +1,5 @@
+ping
+wifi set ssid "Office AP"
+wifi set pass secret-value
+args one two "three four"
+history status

@@ -1,0 +1,32 @@
+#ifndef SH_CONFIG_H
+#define SH_CONFIG_H
+
+#ifndef SH_MAX_LINE_LEN
+#define SH_MAX_LINE_LEN 256
+#endif
+
+#ifndef SH_MAX_ARGC
+#define SH_MAX_ARGC 32
+#endif
+
+#ifndef SH_MAX_CMD_DEPTH
+#define SH_MAX_CMD_DEPTH 8
+#endif
+
+#ifndef SH_HISTORY_DEFAULT_DEPTH
+#define SH_HISTORY_DEFAULT_DEPTH 16
+#endif
+
+#ifndef SH_COMPLETION_MAX_MATCHES
+#define SH_COMPLETION_MAX_MATCHES 32
+#endif
+
+#ifndef SH_COMPLETION_PROVIDER_MAX_ITEMS
+#define SH_COMPLETION_PROVIDER_MAX_ITEMS 256
+#endif
+
+#ifndef SH_ENABLE_BUILTINS
+#define SH_ENABLE_BUILTINS 1
+#endif
+
+#endif

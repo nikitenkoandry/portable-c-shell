@@ -1,0 +1,11 @@
+build/
+build_mingw/
+build_host_artifacts/
+build-coverage/
+build-sanitize/
+build-docs/
+*.gcda
+*.gcno
+*.gcov
+*.gcov.json.gz
+release/
